@@ -1,6 +1,6 @@
 The MIT License
 
-Copyright (c) 2019 Anton Shanaurin <grspectre@gmail.com> https://shanaurin.ru
+Copyright (c) 2019 Anton Shanaurin <grspectre(at)gmail.com> https://shanaurin.ru
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

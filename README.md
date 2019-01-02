@@ -23,7 +23,7 @@ source venv/bin/activate
 # win
 venv\Scripts\activate.bat
 
-pip install -r requirments.txt
+pip install -r requirements.txt
 ```
 
 ### Usage
@@ -44,7 +44,7 @@ optional arguments:
 
 ## Versioning
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/your/project/tags). 
+We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/grspectre/jpgtodateddir/tags). 
 
 ## Authors
 
