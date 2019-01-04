@@ -50,7 +50,7 @@ def process_file(img_path, postfix):
     f.close()
     output_path = img_datetime.strftime(path_format)
     if postfix is not None:
-    	output_path += ' ' + postfix
+        output_path += ' ' + postfix
     return output_path
 
 
@@ -66,5 +66,5 @@ def print_error(message):
     sys.stderr.write(message+"\n")
 
 
-if __name__=='__main__':
+if __name__ == '__main__':
     main()
