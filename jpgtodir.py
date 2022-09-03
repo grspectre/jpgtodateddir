@@ -7,10 +7,13 @@ import imghdr
 import exifread
 import datetime
 import shutil
+import re
+from typing import Optional
 
 
 def main():
     allowed_file_types = ['jpeg', 'tiff']
+    allowed_file_ext = ['.mp4', '.ogg']
     path, postfix = get_params()
     # curious bug with path in "" (win10)
     if path[-1] == '"':
@@ -23,7 +26,8 @@ def main():
             if not entry.name.startswith('.') and entry.is_file():
                 file_path = os.path.join(path, entry.name)
                 file_type = imghdr.what(file_path)
-                if file_type in allowed_file_types:
+                file_ext = os.path.splitext(file_path)[-1]
+                if file_type in allowed_file_types or file_ext in allowed_file_ext:
                     part_path = process_file(file_path, postfix)
                     new_path = os.path.join(path, part_path)
                     new_path = os.path.normpath(new_path)
@@ -35,8 +39,8 @@ def main():
 
 
 def process_file(img_path, postfix):
+    print('process {}'.format(img_path))
     time_format = '%Y:%m:%d %H:%M:%S'
-    path_format = '%Y/%m/%Y%m%d'
     default_path = 'unsorted'
     if postfix is not None:
         default_path += ' ' + postfix
@@ -45,13 +49,36 @@ def process_file(img_path, postfix):
     tags = exifread.process_file(f, stop_tag=date_tag_name)
     tag_keys = tags.keys()
     if date_tag_name not in tag_keys:
-        return default_path
+        img_datetime = find_date_in_file_name(img_path)
+        return default_path if img_datetime is None else get_output_path(img_datetime, postfix)
     img_datetime = datetime.datetime.strptime(str(tags[date_tag_name]), time_format)
     f.close()
-    output_path = img_datetime.strftime(path_format)
+    return get_output_path(img_datetime, postfix)
+
+
+def get_output_path(dt: datetime.datetime, postfix: str) -> str:
+    path_format = '%Y/%m/%Y%m%d'
+    output_path = dt.strftime(path_format)
     if postfix is not None:
         output_path += ' ' + postfix
     return output_path
+
+
+def find_date_in_file_name(path: str) -> Optional[datetime.datetime]:
+    params = [
+        {'re': re.compile('\d{4}-\d{2}-\d{2}'), 'format': '%Y-%m-%d'},
+        {'re': re.compile('\d{2}-\d{2}-\d{4}'), 'format': '%d-%m-%Y'},
+        {'re': re.compile('\d{8}'), 'format': '%Y%m%d'},
+    ]
+    file_name = os.path.split(path)[-1]
+    for param in params:
+        result = re.findall(param['re'], file_name)
+        for date_str in result:
+            try:
+                return datetime.datetime.strptime(date_str, param['format'])
+            except ValueError:
+                pass
+    return None
 
 
 def get_params():
